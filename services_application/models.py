@@ -5,7 +5,14 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 from django.db import models
+from django.utils import timezone
+
+from services_application.managers import UserManager
 
 
 class AuthGroup(models.Model):
@@ -78,11 +85,18 @@ class AuthUserUserPermissions(models.Model):
 
 
 class Contract(models.Model):
-    id_client = models.ForeignKey('User', models.DO_NOTHING, db_column='id_client')
-    id_service = models.ForeignKey('Service', models.DO_NOTHING, db_column='id_service')
+    ContractStatus = [
+        ('EXECUTION', 'execution'),
+        ('SIGN', 'sign'),
+        ('RESIGNING', 'resigning'),
+    ]
+
+    client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contract',
+                               related_query_name='contract', db_column='client')
+    service = models.ForeignKey('Service', models.DO_NOTHING, db_column='service')
     date_of_execution = models.DateTimeField(blank=True, null=True)
     date_of_signing = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=9)
+    status = models.CharField(max_length=9, choices=ContractStatus)
     duration = models.IntegerField()
 
     class Meta:
@@ -97,7 +111,7 @@ class DjangoAdminLog(models.Model):
     action_flag = models.PositiveSmallIntegerField()
     change_message = models.TextField()
     content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    user_id = models.BigIntegerField()
 
     class Meta:
         managed = False
@@ -136,7 +150,8 @@ class DjangoSession(models.Model):
 
 
 class Service(models.Model):
-    id_user = models.ForeignKey('User', models.DO_NOTHING, db_column='id_user')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='service',
+                             related_query_name='service', db_column='user')
     title = models.CharField(max_length=45)
     description = models.TextField()
     price = models.FloatField()
@@ -147,17 +162,57 @@ class Service(models.Model):
         managed = False
         db_table = 'service'
 
+    def __str__(self):
+        return self.title
 
-class User(models.Model):
-    first_name = models.CharField(max_length=45)
-    last_name = models.CharField(max_length=45)
-    sex = models.CharField(max_length=6)
-    phone = models.CharField(max_length=45, blank=True, null=True)
-    email = models.CharField(max_length=45)
-    date_of_registration = models.DateTimeField()
-    date_of_birth = models.DateTimeField()
-    img = models.TextField(blank=True, null=True)
+
+class User(AbstractBaseUser, PermissionsMixin):
+    SEX = [
+        ('FEMALE', 'Female'),
+        ('MALE', 'Male'),
+    ]
+    password = models.CharField(max_length=128, null=True)
+    username = models.CharField(db_index=True, max_length=255, unique=True, null=True)
+    email = models.EmailField(db_index=True, unique=True, blank=True, null=True)
+
+    is_worker = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
+    birth_date = models.DateField(default='1999-01-01')
+    sex = models.CharField(choices=SEX, max_length=6)
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email', 'birth_date', 'sex']
+
+    objects = UserManager()
 
     class Meta:
         managed = False
-        db_table = 'user'
+        db_table = 'services_application_user'
+
+    def __str__(self):
+        return self.username
+
+
+class ServicesApplicationUserGroups(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING)
+    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'services_application_user_groups'
+        unique_together = (('user', 'group'),)
+
+
+class ServicesApplicationUserUserPermissions(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, models.DO_NOTHING)
+    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
+
+    class Meta:
+        managed = False
+        db_table = 'services_application_user_user_permissions'
+        unique_together = (('user', 'permission'),)

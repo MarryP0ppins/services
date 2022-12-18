@@ -2,8 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7908bfd2-1773-481e-8930-09189522cf23" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/services_application/managers.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services_application/permissions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services_application/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services_application/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services_application/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services_application/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/views.py" afterDir="false" />
@@ -33,6 +37,11 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/nagor/Documents/git/services&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
   <component name="RunManager">
@@ -71,7 +80,11 @@
       <updated>1670894221366</updated>
       <workItem from="1670894248628" duration="50000" />
       <workItem from="1670894345757" duration="7306000" />
-      <workItem from="1670937008437" duration="2604000" />
+      <workItem from="1670937008437" duration="7552000" />
+      <workItem from="1670969506306" duration="4689000" />
+      <workItem from="1671011112632" duration="903000" />
+      <workItem from="1671015749880" duration="601000" />
+      <workItem from="1671309323907" duration="32258000" />
     </task>
     <servers />
   </component>

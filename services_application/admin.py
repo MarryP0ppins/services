@@ -1,6 +1,17 @@
 from django.contrib import admin
-from .models import User, Service, Contract
+from .models import Service, Contract, User
 
-admin.site.register(User)
-admin.site.register(Service)
-admin.site.register(Contract)
+
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'price')
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'is_superuser', 'is_staff', 'is_worker')
+
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    list_display = ('id', 'status')

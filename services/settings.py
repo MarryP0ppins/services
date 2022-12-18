@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-scf=)2w_vxe*2m$75=*=0zluc!w=b4d!g%y3lk7x-*c5_d3t&8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+#ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -37,19 +37,31 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'services_application.apps.ServicesApplicationConfig',
+    'services_application',
     'rest_framework',
     'drf_yasg',
+    'corsheaders',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    #'DEFAULT_AUTHENTICATION_CLASSES': (
+    #    'services_application.backends.CustomAuthentication',
+    #),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = 'services.urls'
@@ -91,6 +103,10 @@ DATABASES = {
 }
 
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+AUTH_USER_MODEL = 'services_application.User'
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -131,3 +147,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#CSRF_COOKIE_SECURE = True
+#SESSION_COOKIE_SECURE = True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+APPEND_SLASH = True
+#CSRF_COOKIE_SAMESITE = 'None'
+#SESSION_COOKIE_SAMESITE = 'None'
