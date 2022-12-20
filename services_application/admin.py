@@ -9,7 +9,7 @@ class ServiceAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('username', 'email', 'is_superuser', 'is_staff', 'is_worker')
+    list_display = ('username', 'id', 'email', 'is_superuser', 'is_staff', 'is_worker')
 
 
 @admin.register(Contract)

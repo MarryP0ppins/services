@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from django.db.models import Min, Max
@@ -12,7 +13,7 @@ from rest_framework import viewsets, status
 from rest_framework.views import APIView
 
 from .models import Contract, Service, User
-from .permissions import IsStaff, IsSuperUser
+from .permissions import IsStaff, IsSuperUser, IsWorker
 from .serializers import ContractSerializer, ServiceSerializer, LoginSerializer, RegistrationSerializer
 
 import redis
@@ -24,9 +25,11 @@ class ContractsViewSet(viewsets.ModelViewSet):
     serializer_class = ContractSerializer
 
     def get_permissions(self):
-        if self.action in ['list']:
+        if self.action in ['list', 'partial_update']:
             permission_classes = [IsAuthenticatedOrReadOnly]
-        elif self.action in ['retrieve', 'update', 'partial_update']:
+        elif self.action in ['post', 'create']:
+            permission_classes = [IsWorker]
+        elif self.action in ['retrieve', 'update']:
             permission_classes = [IsStaff]
         else:
             permission_classes = [IsSuperUser]
@@ -53,6 +56,12 @@ class ContractsViewSet(viewsets.ModelViewSet):
         serializer = ContractSerializer(contract)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def post(self, request, *args, **kwargs):
+        request_contract=request.data
+        contract_serialized = ContractSerializer(request_contract)
+        request_contract.save()
+        return Response(contract_serialized.data, status=status.HTTP_201_CREATED)
+
     def update(self, request, pk=None, **kwargs):
         try:
             contract = Contract.objects.get(pk=pk)
@@ -76,9 +85,11 @@ class ServicesViewSet(viewsets.ModelViewSet):
     serializer_class = ServiceSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'price_range']:
+        if self.action in ['list', 'price_range', 'retrieve']:
             permission_classes = [IsAuthenticatedOrReadOnly]
-        elif self.action in ['retrieve', 'update', 'partial_update']:
+        elif self.action in ['post', 'create']:
+            permission_classes = [IsWorker]
+        elif self.action in ['update', 'partial_update']:
             permission_classes = [IsStaff]
         else:
             permission_classes = [IsSuperUser]
@@ -129,6 +140,12 @@ class ServicesViewSet(viewsets.ModelViewSet):
         serializer = ServiceSerializer(service)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def post(self, request, *args, **kwargs):
+        request_service = request.data
+        service_serialized = ServiceSerializer(request_service)
+        request_service.save()
+        return Response(service_serialized.data, status=status.HTTP_201_CREATED)
+
     def update(self, request, pk=None, **kwargs):
         try:
             service = Service.objects.get(pk=pk)
@@ -158,7 +175,7 @@ class LoginAPIView(APIView):
         response = Response(serializer.data, status=status.HTTP_200_OK)
         user = User.objects.get(username=serializer.data.get('username'))
         random_key = str(uuid.uuid4())
-        response.set_cookie(key='uid', value=random_key, httponly=True)
+        response.set_cookie(key='session_id', value=random_key, samesite='None', secure=True)
         session_storage.set(random_key, value=user.pk)
         return response
 
@@ -172,15 +189,17 @@ class RegistrationAPIView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({"status": "registration successful"}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['post'])
-def auth_logout(request):
-    session_id = request.COOKIES.get('session_id')
-    if session_id:
-        session_storage.delete(session_id)
-        response = HttpResponse('ok')
-        response.delete_cookie('session_id')
-        return response
-    return HttpResponse('Unauthorized', status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+class LogoutAPIView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        session_id = request.COOKIES.get('session_id')
+        if session_id:
+            session_storage.delete(session_id)
+            response = Response({"status": "logout"}, status=status.HTTP_200_OK)
+            response.delete_cookie('session_id')
+            return response
+
+        return Response({"status": "Unauthorized"}, status=status.HTTP_401_UNAUTHORIZED)
