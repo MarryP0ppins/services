@@ -1,10 +1,7 @@
-import logging
 import uuid
 
 from django.db.models import Min, Max
 from django.conf import settings
-from django.http import HttpResponse
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
@@ -15,11 +12,34 @@ from rest_framework.views import APIView
 
 from .models import Contract, Service, User
 from .permissions import IsStaff, IsSuperUser, IsWorker
-from .serializers import ContractSerializer, ServiceSerializer, LoginSerializer, RegistrationSerializer
+from .serializers import ContractSerializer, ServiceSerializer, LoginSerializer, RegistrationSerializer, UserSerializer
 
 import redis
 
 session_storage = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
+
+
+class UsersViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        if self.action in []:
+            permission_classes = [IsAuthenticatedOrReadOnly]
+        elif self.action in ['retrieve', 'list']:
+            permission_classes = [IsStaff]
+        else:
+            permission_classes = [IsSuperUser]
+        return [permission() for permission in permission_classes]
+
+    def list(self, request, *args, **kwargs):
+        serializer = UserSerializer(User.objects.all(), many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None, **kwargs):
+        queryset = User.objects.all()
+        contract = get_object_or_404(queryset, pk=pk)
+        serializer = UserSerializer(contract)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ContractsViewSet(viewsets.ModelViewSet):
@@ -77,6 +97,17 @@ class ContractsViewSet(viewsets.ModelViewSet):
         except Contract.DoesNotExist:
             return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ContractSerializer(contract, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, pk=None, **kwargs):
+        try:
+            contract = Contract.objects.get(pk=pk)
+        except Contract.DoesNotExist:
+            return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ContractSerializer(contract, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -161,6 +192,17 @@ class ServicesViewSet(viewsets.ModelViewSet):
         except Service.DoesNotExist:
             return Response({'message': 'The services does not exist'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ServiceSerializer(service, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, pk=None, **kwargs):
+        try:
+            service = Service.objects.get(pk=pk)
+        except Service.DoesNotExist:
+            return Response({'message': 'The services does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ServiceSerializer(service, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

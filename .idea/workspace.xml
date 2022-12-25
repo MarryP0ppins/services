@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="7908bfd2-1773-481e-8930-09189522cf23" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services_application/permissions.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/permissions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services_application/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services_application/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/serializers.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services_application/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -90,7 +92,7 @@
       <workItem from="1671580025637" duration="5704000" />
       <workItem from="1671723003209" duration="213000" />
       <workItem from="1671726009828" duration="543000" />
-      <workItem from="1671940086161" duration="12530000" />
+      <workItem from="1671940086161" duration="18681000" />
     </task>
     <servers />
   </component>
@@ -107,5 +109,16 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/services_application/backend.py</url>
+          <line>21</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

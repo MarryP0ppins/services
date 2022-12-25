@@ -10,6 +10,7 @@ from rest_framework import routers, permissions
 router = routers.DefaultRouter()
 router.register(r'contracts', views.ContractsViewSet, basename='contracts')
 router.register(r'services', views.ServicesViewSet, basename='services')
+router.register(r'users', views.UsersViewSet, basename='users')
 
 schema_view = get_schema_view(
    openapi.Info(

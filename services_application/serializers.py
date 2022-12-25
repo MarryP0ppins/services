@@ -4,6 +4,13 @@ from .models import Contract, Service, User
 from rest_framework import serializers
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+
+        fields = ['id', 'email', 'username', 'birth_date', 'sex', 'created_at', 'is_worker']
+
+
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
