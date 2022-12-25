@@ -4,7 +4,7 @@ from .models import Service, Contract, User
 
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price')
+    list_display = ('title', 'id', 'price')
 
 
 @admin.register(User)

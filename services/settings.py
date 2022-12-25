@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-scf=)2w_vxe*2m$75=*=0zluc!w=b4d!g%y3lk7x-*c5_d3t&8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['192.168.1.68', '127.0.0.1', '172.20.10.2', '195.19.55.134', '195.19.55.177']
 
 # Application definition
 
@@ -47,16 +46,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    #'DEFAULT_AUTHENTICATION_CLASSES': (
-    #    'services_application.backends.CustomAuthentication',
-    #),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'services_application.backend.RedisAuthentication',
+    ),
 }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

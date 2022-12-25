@@ -4,6 +4,7 @@ import uuid
 from django.db.models import Min, Max
 from django.conf import settings
 from django.http import HttpResponse
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 from rest_framework.decorators import api_view, action
 from rest_framework.generics import get_object_or_404
@@ -25,10 +26,8 @@ class ContractsViewSet(viewsets.ModelViewSet):
     serializer_class = ContractSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'partial_update']:
+        if self.action in ['list', 'partial_update', 'destroy', 'create', 'contract_statuses', 'partial_update']:
             permission_classes = [IsAuthenticatedOrReadOnly]
-        elif self.action in ['post', 'create']:
-            permission_classes = [IsWorker]
         elif self.action in ['retrieve', 'update']:
             permission_classes = [IsStaff]
         else:
@@ -46,6 +45,16 @@ class ContractsViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(client_id=user_id)
         return queryset
 
+    @action(detail=False, methods=['get'])
+    def contract_statuses(self, request):
+        statuses = []
+        for choice in Contract.ContractStatus.choices:
+            statuses.append({'value': choice[0], 'label': choice[1]})
+        try:
+            return Response(statuses)
+        except:
+            return Response([], status=status.HTTP_404_NOT_FOUND)
+
     def list(self, request, *args, **kwargs):
         serializer = ContractSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
@@ -57,7 +66,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        request_contract=request.data
+        request_contract = request.data
         contract_serialized = ContractSerializer(request_contract)
         request_contract.save()
         return Response(contract_serialized.data, status=status.HTTP_201_CREATED)
@@ -66,8 +75,19 @@ class ContractsViewSet(viewsets.ModelViewSet):
         try:
             contract = Contract.objects.get(pk=pk)
         except Contract.DoesNotExist:
-            return Response({'message': 'The contracts does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ContractSerializer(contract, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def partial_update(self, request, pk=None, **kwargs):
+        try:
+            contract = Contract.objects.get(pk=pk)
+        except Contract.DoesNotExist:
+            return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ContractSerializer(contract, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -75,7 +95,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None, **kwargs):
         try:
-            self.get_queryset().delete()
+            Contract.objects.get(pk=pk).delete()
         except Exception:
             return Response(self.serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"status": "ok"}, status=status.HTTP_200_OK)
@@ -194,6 +214,7 @@ class RegistrationAPIView(APIView):
 
 class LogoutAPIView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
         session_id = request.COOKIES.get('session_id')
         if session_id:

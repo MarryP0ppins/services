@@ -11,6 +11,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from services_application.managers import UserManager
 
@@ -85,18 +86,17 @@ class AuthUserUserPermissions(models.Model):
 
 
 class Contract(models.Model):
-    ContractStatus = [
-        ('EXECUTION', 'execution'),
-        ('SIGN', 'sign'),
-        ('RESIGNING', 'resigning'),
-    ]
+    class ContractStatus(models.TextChoices):
+        EXECUTION = 'EXECUTION', _('Подписание')
+        SIGN = 'SIGN', _('Действующие')
+        RESIGNING = 'RESIGNING', _('Продление')
 
     client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contract',
                                related_query_name='contract', db_column='client')
     service = models.ForeignKey('Service', models.DO_NOTHING, db_column='service')
     date_of_execution = models.DateTimeField(blank=True, null=True)
     date_of_signing = models.DateTimeField(blank=True, null=True)
-    status = models.CharField(max_length=9, choices=ContractStatus)
+    status = models.CharField(max_length=9, choices=ContractStatus.choices)
     duration = models.IntegerField()
 
     class Meta:
