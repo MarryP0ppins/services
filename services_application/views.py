@@ -26,7 +26,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
     serializer_class = ContractSerializer
 
     def get_permissions(self):
-        if self.action in ['list', 'partial_update', 'destroy', 'create', 'contract_statuses', 'partial_update']:
+        if self.action in ['list', 'destroy', 'create', 'contract_statuses', 'partial_update']:
             permission_classes = [IsAuthenticatedOrReadOnly]
         elif self.action in ['retrieve', 'update']:
             permission_classes = [IsStaff]
@@ -77,17 +77,6 @@ class ContractsViewSet(viewsets.ModelViewSet):
         except Contract.DoesNotExist:
             return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
         serializer = ContractSerializer(contract, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def partial_update(self, request, pk=None, **kwargs):
-        try:
-            contract = Contract.objects.get(pk=pk)
-        except Contract.DoesNotExist:
-            return Response({'message': 'The contract does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        serializer = ContractSerializer(contract, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
