@@ -47,7 +47,8 @@ class ContractsViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'destroy', 'create', 'contract_statuses', 'partial_update']:
-            permission_classes = [IsAuthenticatedOrReadOnly]
+            #permission_classes = [IsAuthenticatedOrReadOnly]
+            permission_classes = [AllowAny]
         elif self.action in ['retrieve', 'update']:
             permission_classes = [IsStaff]
         else:
@@ -56,7 +57,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Contract.objects.all().order_by('id')
-        user_id = self.request.query_params.get('user_id')
+        user_id = self.request.query_params.get('client_id')
         status = self.request.query_params.get('status')
 
         if status:
@@ -115,10 +116,12 @@ class ContractsViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None, **kwargs):
         try:
+            contract = Contract.objects.get(pk=pk)
+            serializer = ContractSerializer(contract)
             Contract.objects.get(pk=pk).delete()
         except Exception:
             return Response(self.serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ServicesViewSet(viewsets.ModelViewSet):
@@ -126,7 +129,8 @@ class ServicesViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'price_range', 'retrieve']:
-            permission_classes = [IsAuthenticatedOrReadOnly]
+            # permission_classes = [IsAuthenticatedOrReadOnly]
+            permission_classes = [AllowAny]
         elif self.action in ['post', 'create']:
             permission_classes = [IsWorker]
         elif self.action in ['update', 'partial_update']:
@@ -210,10 +214,12 @@ class ServicesViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None, **kwargs):
         try:
+            service = Service.objects.get(pk=pk)
+            serializer = ContractSerializer(service)
             self.get_queryset().delete()
         except Exception:
             return Response(self.serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class LoginAPIView(APIView):
