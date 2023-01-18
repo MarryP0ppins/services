@@ -92,6 +92,7 @@ class Contract(models.Model):
         EXECUTION = 'EXECUTION', _('Подписание')
         SIGN = 'SIGN', _('Действующие')
         RESIGNING = 'RESIGNING', _('Продление')
+        REQUEST = 'REQUEST', _('Запросы на расторжение')
 
     client = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contract',
                                related_query_name='contract', db_column='client')

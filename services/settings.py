@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-scf=)2w_vxe*2m$75=*=0zluc!w=b4d!g%y3lk7x-*c5_d3t&8
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.68', '127.0.0.1', '172.20.10.2', '195.19.55.134', '195.19.55.177', '192.168.1.68', '195.19.55.234']
+ALLOWED_HOSTS = ['0.0.0.0']
 
 # Application definition
 
@@ -91,9 +91,9 @@ WSGI_APPLICATION = 'services.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nikita_db',
-        'USER': 'marryp0ppins',
-        'PASSWORD': 'NikitaNastya1911',
+        'NAME': '...',
+        'USER': '...',
+        'PASSWORD': '...',
         'HOST': 'localhost',
         'PORT': 3306, # Стандартный порт MySQL
         'OPTIONS': {'charset': 'utf8'},

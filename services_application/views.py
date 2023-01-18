@@ -47,8 +47,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'destroy', 'create', 'contract_statuses', 'partial_update']:
-            #permission_classes = [IsAuthenticatedOrReadOnly]
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticatedOrReadOnly]
         elif self.action in ['retrieve', 'update']:
             permission_classes = [IsStaff]
         else:
@@ -59,11 +58,14 @@ class ContractsViewSet(viewsets.ModelViewSet):
         queryset = Contract.objects.all().order_by('id')
         user_id = self.request.query_params.get('client_id')
         status = self.request.query_params.get('status')
+        services = self.request.query_params.get('services')
 
         if status:
             queryset = queryset.filter(status=status)
         if user_id:
             queryset = queryset.filter(client_id=user_id)
+        if services:
+            queryset = queryset.filter(service__in=services.split(','))
         return queryset
 
     @action(detail=False, methods=['get'])
@@ -118,7 +120,7 @@ class ContractsViewSet(viewsets.ModelViewSet):
         try:
             contract = Contract.objects.get(pk=pk)
             serializer = ContractSerializer(contract)
-            Contract.objects.get(pk=pk).delete()
+            contract.delete()
         except Exception:
             return Response(self.serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -129,8 +131,7 @@ class ServicesViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list', 'price_range', 'retrieve']:
-            # permission_classes = [IsAuthenticatedOrReadOnly]
-            permission_classes = [AllowAny]
+            permission_classes = [IsAuthenticatedOrReadOnly]
         elif self.action in ['post', 'create']:
             permission_classes = [IsWorker]
         elif self.action in ['update', 'partial_update']:
@@ -143,6 +144,7 @@ class ServicesViewSet(viewsets.ModelViewSet):
         queryset = Service.objects.all().order_by('id')
         contracts_ids = Contract.objects.values('service')
         all_contracts = self.request.query_params.get('all')
+        user = self.request.query_params.get('user')
         services_ids = self.request.query_params.get('services_ids')
         title = self.request.query_params.get('title')
         price_min = self.request.query_params.get('price_min')
@@ -156,6 +158,8 @@ class ServicesViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(id__in=services_ids.split(','))
         if title:
             queryset = queryset.filter(title__contains=title)
+        if user:
+            queryset = queryset.filter(user=user)
         if price_min:
             queryset = queryset.filter(price__gte=price_min)
         if price_max:
@@ -216,7 +220,7 @@ class ServicesViewSet(viewsets.ModelViewSet):
         try:
             service = Service.objects.get(pk=pk)
             serializer = ContractSerializer(service)
-            self.get_queryset().delete()
+            service.delete()
         except Exception:
             return Response(self.serializer_class.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.data, status=status.HTTP_200_OK)

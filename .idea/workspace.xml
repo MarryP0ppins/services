@@ -4,6 +4,7 @@
     <list default="true" id="7908bfd2-1773-481e-8930-09189522cf23" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/services/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services_application/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/services_application/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/services_application/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,7 +51,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
         <env name="DJANGO_SETTINGS_MODULE" value="services.settings" />
       </envs>
-      <option name="SDK_HOME" value="" />
+      <option name="SDK_HOME" value="C:\Users\nagor\Documents\git\services\venv\Scripts\python.exe" />
       <option name="WORKING_DIRECTORY" value="" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -91,7 +92,10 @@
       <workItem from="1671723003209" duration="213000" />
       <workItem from="1671726009828" duration="543000" />
       <workItem from="1671940086161" duration="26172000" />
-      <workItem from="1672083591951" duration="912000" />
+      <workItem from="1672083591951" duration="10549000" />
+      <workItem from="1672211078973" duration="1722000" />
+      <workItem from="1673589928566" duration="703000" />
+      <workItem from="1673595041208" duration="1985000" />
     </task>
     <servers />
   </component>
@@ -108,16 +112,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/services_application/backend.py</url>
-          <line>21</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
